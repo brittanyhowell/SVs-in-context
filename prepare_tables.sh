@@ -24,7 +24,7 @@ tab_refSeq_func_elements=${refDIR}/refSeq_funcElems
 tab_seg_dups=${refDIR}/seg_dups
 tab_simple_repeats=${refDIR}/simple_repeats
 
-filter_clinvar_long=${refDIR}/clinvar_long_filter.tmp
+filter_clinvar=${refDIR}/clinvar_filter.tmp
 filter_clinvar_short=${refDIR}/clinvar_short_filter.tmp
 filter_dgv_SV=${refDIR}/dgv_SV_filter.tmp
 filter_gencode_v28=${refDIR}/gencode_v28_comprehensive_filter.tmp
@@ -38,8 +38,8 @@ filter_simple_repeats=${refDIR}/simple_repeats_filter.tmp
 #### Set the required regions
     ## These thresholds will be used to set the x limits on the final plot.
     chrom=chr2 #$1
-    start=77850000 #$2
-    end=78000000  #$3
+    start=1013271 #$2
+    end=1414625  #$3
 
 
 #### Prepare tables
@@ -57,28 +57,38 @@ filter_simple_repeats=${refDIR}/simple_repeats_filter.tmp
         rm ${filter_seg_dups}.1
 
     ## SVs 
-    cat ${tab_SVs}  | awk '{print $2 "\t" $3 "\t" $11 "\t" $9}'| awk -v chr="${chrom}"  -F"\t" '$1 == chr { print $0 }' | awk -v start=${start} -v end=${end} '{ if (($2 > start) && ($3 < end)) { print $0 } }' >  ${filter_SVs}.1 
-    cat ${filter_SVs}.1 ${dummy_4} > ${filter_SVs}
-    rm ${filter_SVs}.1
+        cat ${tab_SVs}  | awk '{print $2 "\t" $3 "\t" $11 "\t" $9}'| awk -v chr="${chrom}"  -F"\t" '$1 == chr { print $0 }' | awk -v start=${start} -v end=${end} '{ if (($2 > start) && ($3 < end)) { print $0 } }' >  ${filter_SVs}.1 
+        # Add dummy line
+            cat ${filter_SVs}.1 ${dummy_4} > ${filter_SVs}
+            rm ${filter_SVs}.1
 
     ## Simple Repeats
-    ## Extract chr, start, end, period_copynumber_GCcontent
-    cat ${tab_simple_repeats} |  awk '{print $2 "\t" $3 "\t" $4 "\t" $6"_"$7"_"$13+$14}' |   awk -v chr="${chrom}"  -F"\t" '$1 == chr { print $0 }' | awk -v start=${start} -v end=${end} '{ if (($2 > start) && ($3 < end)) { print $0 } }' >  ${filter_simple_repeats}.1
-    # Add dummy line
-    cat ${filter_simple_repeats}.1 ${dummy_4} > ${filter_simple_repeats}
-    rm ${filter_simple_repeats}.1
+        ## Extract chr, start, end, period_copynumber_GCcontent
+        cat ${tab_simple_repeats} |  awk '{print $2 "\t" $3 "\t" $4 "\t" $6"_"$7"_"$13+$14}' |   awk -v chr="${chrom}"  -F"\t" '$1 == chr { print $0 }' | awk -v start=${start} -v end=${end} '{ if (($2 > start) && ($3 < end)) { print $0 } }' >  ${filter_simple_repeats}.1
+        # Add dummy line
+            cat ${filter_simple_repeats}.1 ${dummy_4} > ${filter_simple_repeats}
+            rm ${filter_simple_repeats}.1
 
     ## Database of genomic variants
-    ## Extract chr, start, end, period_copynumber_GCcontent
-    cat ${tab_dgv_SV} |  awk '{print $2 "\t" $3 "\t" $4 "\t" $5"_"$11}' |   awk -v chr="${chrom}"  -F"\t" '$1 == chr { print $0 }' | awk -v start=${start} -v end=${end} '{ if (($2 > start) && ($3 < end)) { print $0 } }' >  ${filter_dgv_SV}.1
-    # Add dummy line
-    cat ${filter_dgv_SV}.1 ${dummy_4} > ${filter_dgv_SV}
-    rm ${filter_dgv_SV}.1
+        ## Extract chr, start, end, period_copynumber_GCcontent
+        cat ${tab_dgv_SV} |  awk '{print $2 "\t" $3 "\t" $4 "\t" $5"_"$11}' |   awk -v chr="${chrom}"  -F"\t" '$1 == chr { print $0 }' | awk -v start=${start} -v end=${end} '{ if (($2 > start) && ($3 < end)) { print $0 } }' >  ${filter_dgv_SV}.1
+        # Add dummy line
+            cat ${filter_dgv_SV}.1 ${dummy_4} > ${filter_dgv_SV}
+            rm ${filter_dgv_SV}.1
+
+    ## Clinvar 
+        cat ${tab_clinvar_short} ${tab_clinvar_long} |  cut -f1-4 |   awk -v chr="${chrom}"  -F"\t" '$1 == chr { print $0 }' | awk -v start=${start} -v end=${end} '{ if (($2 > start) && ($3 < end)) { print $0 } }' > ${filter_clinvar}.1
+        ## Add dummy line
+        cat ${filter_clinvar}.1 ${dummy_4} > ${filter_clinvar}
+            rm ${filter_clinvar}.1
+
+
+
 
 
 ## Run the plotting script:
 
-Rscript ${scriptDIR}/load_and_view.R  ${filter_SVs} ${filter_refSeq_func_elements} ${filter_seg_dups} ${filter_simple_repeats} ${start} ${end} ${scriptDIR} ${filter_dgv_SV}
+Rscript ${scriptDIR}/load_and_view.R  ${filter_SVs} ${filter_refSeq_func_elements} ${filter_seg_dups} ${filter_simple_repeats} ${start} ${end} ${scriptDIR} ${filter_dgv_SV} ${filter_clinvar}
 
 # sv.file <- read.table(file = args[1], sep = "\t", stringsAsFactors = F, header = T)
 # ucsc.file <- read.table(file =args[2], sep = "\t", stringsAsFactors = F)
