@@ -148,8 +148,8 @@ if (nrow(dgv) > 0 ) {
   }
  
 if (nrow(clinv) > 0 ) {
-  p <- p + geom_rect(aes(xmin=clinv[,2]-100, xmax=clinv[,3]+100, ymin=10,ymax=11, fill=clinv[,4] )) 
-  # p <- p + geom_text(position=position_jitter(width=50000, height=1),size=4,aes(x=clinv[,2],y=10,label=clinv[,4]), hjust = 0)  
+  p <- p + geom_rect(aes(xmin=clinv[,2]-100, xmax=clinv[,3]+100, ymin=10,ymax=11)) 
+  p <- p + geom_text(position=position_jitter(width=50000, height=1),size=4,aes(x=clinv[,2],y=10,label=clinv[,4]), hjust = 0)  
   }
 print(p)
   # 
