@@ -37,9 +37,9 @@ filter_simple_repeats=${refDIR}/simple_repeats_filter.tmp
 
 #### Set the required regions
     ## These thresholds will be used to set the x limits on the final plot.
-    chrom=chr2 #$1
-    start=1013271 #$2
-    end=1414625  #$3
+    chrom=chr10 #$1
+    start=77031140 #$2
+    end=77151140  #$3
 
 
 #### Prepare tables
