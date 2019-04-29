@@ -1,6 +1,6 @@
 ## Usage: Plot mutliple annotation tracks given a set of tables
 ## Author: Brittany Howell (bh10@sanger.ac.uk)
-## Date: 24th January 2018
+## Date: 24th January 2019
 
 #### Inputs:
 # Coordinates to plot on chromosome
